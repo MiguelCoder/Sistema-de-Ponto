@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Alterar Usuário/Senha</title>
+  <link rel="icon" href="favicon.png" type="image/png">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-dark text-white d-flex justify-content-center align-items-center vh-100">
+  <form action="/alterar-usuario" method="POST" class="bg-secondary p-4 rounded shadow w-25">
+    <h3 class="mb-3 text-center">Alterar Usuário/Senha</h3>
+    
+    <input type="text" name="novoUsuario" placeholder="Novo Usuário" class="form-control mb-2" required>
+    <input type="password" name="novaSenha" placeholder="Nova Senha" class="form-control mb-3" required>
+    
+    <button type="submit" class="btn btn-warning w-100">Salvar Alterações</button>
+    <a href="/ponto.html" class="btn btn-light w-100 mt-2">Voltar</a>
+  </form>
+</body>
+</html>
