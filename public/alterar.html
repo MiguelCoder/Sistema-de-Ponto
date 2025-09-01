@@ -3,18 +3,51 @@
 <head>
   <meta charset="UTF-8">
   <title>Alterar Usuário/Senha</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" href="favicon.png" type="image/png">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background: #0f172a;
+      color: #e2e8f0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .form-container {
+      background: #111827;
+      padding: 2rem;
+      border-radius: 0.75rem;
+      box-shadow: 0 0 15px rgba(0,0,0,0.5);
+      width: 100%;
+      max-width: 400px;
+    }
+    .form-container h3 {
+      text-align: center;
+      margin-bottom: 1.5rem;
+      color: #f1f5f9;
+    }
+    .btn-primary, .btn-secondary {
+      border-radius: 0.5rem;
+      font-weight: 500;
+    }
+    .btn-primary { background-color: #3b82f6; border:none; }
+    .btn-primary:hover { background-color: #2563eb; }
+    .btn-secondary { background-color: #374151; border:none; }
+    .btn-secondary:hover { background-color: #4b5563; }
+    @media (max-width: 500px) {
+      .form-container { padding: 1.5rem; }
+    }
+  </style>
 </head>
-<body class="bg-dark text-white d-flex justify-content-center align-items-center vh-100">
-  <form action="/alterar-usuario" method="POST" class="bg-secondary p-4 rounded shadow w-25">
-    <h3 class="mb-3 text-center">Alterar Usuário/Senha</h3>
-    
-    <input type="text" name="novoUsuario" placeholder="Novo Usuário" class="form-control mb-2" required>
+<body>
+  <form action="/alterar-usuario" method="POST" class="form-container">
+    <h3>Alterar Usuário/Senha</h3>
+    <input type="text" name="novoUsuario" placeholder="Novo Usuário" class="form-control mb-3" required>
     <input type="password" name="novaSenha" placeholder="Nova Senha" class="form-control mb-3" required>
-    
-    <button type="submit" class="btn btn-warning w-100">Salvar Alterações</button>
-    <a href="/ponto.html" class="btn btn-light w-100 mt-2">Voltar</a>
+    <button type="submit" class="btn btn-primary w-100 mb-2">Alterar</button>
+    <a href="/ponto.html" class="btn btn-secondary w-100">Voltar</a>
   </form>
 </body>
 </html>

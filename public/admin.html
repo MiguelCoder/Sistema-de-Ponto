@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin - Gestão de Usuários</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="favicon.png" type="image/png">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body { background:#0f172a; color:#e2e8f0; }
+    .card { background:#111827; border:1px solid #1f2937; }
+    .btn { margin-bottom: 5px; }
+    .table-responsive { overflow-x:auto; }
+    table { color:#e2e8f0; min-width:600px; }
+    th, td { vertical-align: middle; }
+    .form-control { background:#1f2937; color:#e2e8f0; border:1px solid #374151; }
+    .form-control:focus { background:#1f2937; color:#e2e8f0; box-shadow:none; border-color:#6366f1; }
+    @media(max-width:576px){
+      .btn { width:100%; }
+      #formNovoUsuario .mb-2, #formNovoUsuario select { margin-bottom:10px; }
+    }
+  </style>
+</head>
+<body class="p-3">
+  <div class="container-fluid">
+    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start mb-3">
+      <h2 class="mb-2 mb-sm-0">Admin - Usuários</h2>
+      <div class="d-flex flex-column flex-sm-row gap-2">
+        <a href="/ponto.html" class="btn btn-secondary btn-sm">Voltar</a>
+        <a href="/logout" class="btn btn-danger btn-sm">Sair</a>
+      </div>
+    </div>
+
+    <!-- Criar novo usuário -->
+    <div class="card p-3 mb-4">
+      <h5 class="mb-3">Criar Novo Usuário</h5>
+      <form id="formNovoUsuario" class="d-flex flex-column flex-sm-row gap-2 flex-wrap">
+        <input type="text" id="novoUsername" placeholder="Usuário" class="form-control flex-fill" required>
+        <input type="password" id="novaSenha" placeholder="Senha" class="form-control flex-fill" required>
+        <select id="novoRole" class="form-control flex-fill" required>
+          <option value="user">Usuário</option>
+          <option value="admin">Administrador</option>
+        </select>
+        <button type="submit" class="btn btn-primary flex-fill">Criar</button>
+      </form>
+    </div>
+
+    <!-- Lista de usuários -->
+    <div class="card p-3">
+      <h5 class="mb-3">Lista de Usuários</h5>
+      <div class="table-responsive">
+        <table class="table table-dark table-striped" id="tabelaUsuarios">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Usuário</th>
+              <th>Role</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Usuários serão carregados via JS -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    async function carregaUsuarios() {
+      const resp = await fetch("/api/admin/usuarios");
+      const usuarios = await resp.json();
+      const tbody = document.querySelector("#tabelaUsuarios tbody");
+      tbody.innerHTML = "";
+      usuarios.forEach(u => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${u.id}</td>
+          <td><input type="text" class="form-control" value="${u.username}" data-id="${u.id}" data-field="username"></td>
+          <td>
+            <select class="form-control" data-id="${u.id}" data-field="role">
+              <option value="user" ${u.role==="user"?"selected":""}>Usuário</option>
+              <option value="admin" ${u.role==="admin"?"selected":""}>Administrador</option>
+            </select>
+          </td>
+          <td>
+            <input type="password" class="form-control mb-1" placeholder="Nova senha (opcional)" data-id="${u.id}" data-field="password">
+            <div class="d-flex flex-column flex-sm-row gap-1">
+              <button class="btn btn-success btn-sm btn-atualizar" data-id="${u.id}">Atualizar</button>
+              <button class="btn btn-danger btn-sm btn-deletar" data-id="${u.id}">Deletar</button>
+            </div>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      // Atualizar usuário
+      document.querySelectorAll(".btn-atualizar").forEach(btn => {
+        btn.addEventListener("click", async e => {
+          const id = e.target.dataset.id;
+          const tr = e.target.closest("tr");
+          const username = tr.querySelector('input[data-field="username"]').value;
+          const role = tr.querySelector('select[data-field="role"]').value;
+          const password = tr.querySelector('input[data-field="password"]').value;
+
+          const resp = await fetch(`/api/admin/usuarios/${id}`, {
+            method: "PUT",
+            headers: { "Content-Type":"application/json" },
+            body: JSON.stringify({ username, role, password: password || undefined })
+          });
+
+          if (resp.ok) {
+            alert("Usuário atualizado!");
+            carregaUsuarios();
+          } else {
+            const err = await resp.json();
+            alert("Erro: " + (err.error || "Não foi possível atualizar"));
+          }
+        });
+      });
+
+      // Deletar usuário
+      document.querySelectorAll(".btn-deletar").forEach(btn => {
+        btn.addEventListener("click", async e => {
+          if (!confirm("Tem certeza que deseja deletar este usuário?")) return;
+          const id = e.target.dataset.id;
+          const resp = await fetch(`/api/admin/usuarios/${id}`, { method: "DELETE" });
+          if (resp.ok) {
+            alert("Usuário deletado!");
+            carregaUsuarios();
+          } else {
+            const err = await resp.json();
+            alert("Erro: " + (err.error || "Não foi possível deletar"));
+          }
+        });
+      });
+    }
+
+    // Criar novo usuário
+    document.getElementById("formNovoUsuario").addEventListener("submit", async e => {
+      e.preventDefault();
+      const username = document.getElementById("novoUsername").value;
+      const password = document.getElementById("novaSenha").value;
+      const role = document.getElementById("novoRole").value;
+
+      const resp = await fetch("/api/admin/usuarios", {
+        method: "POST",
+        headers: { "Content-Type":"application/json" },
+        body: JSON.stringify({ username, password, role })
+      });
+
+      if (resp.ok) {
+        alert("Usuário criado com sucesso!");
+        document.getElementById("formNovoUsuario").reset();
+        carregaUsuarios();
+      } else {
+        const err = await resp.json();
+        alert("Erro: " + (err.error || "Não foi possível criar usuário"));
+      }
+    });
+
+    // Inicializar
+    carregaUsuarios();
+  </script>
+</body>
+</html>
