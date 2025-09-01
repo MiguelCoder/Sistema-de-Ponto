@@ -71,4 +71,5 @@ cd ponto-system
 ```
 
 ## Dependências
+```bash
 npm install express sqlite3 body-parser express-session
