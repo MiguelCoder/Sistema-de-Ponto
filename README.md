@@ -68,5 +68,7 @@ ponto-system/
 git clone https://github.com/SeuUsuario/ponto-system.git
 cd ponto-system
 ---
+```
+
 ## Dependências
 npm install express sqlite3 body-parser express-session
